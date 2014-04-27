@@ -17,5 +17,7 @@ void posterize(const unsigned char* input,
       return;
   }
   int idx = x+y*cols;
-  output[idx] = input[idx]; //copy image
+  output[3*idx+0] = input[3*idx+0]; //Red
+  output[3*idx+1] = input[3*idx+1]; //Green
+  output[3*idx+2] = input[3*idx+2]; //Blue
 }
