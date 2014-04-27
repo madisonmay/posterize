@@ -8,5 +8,9 @@ __global__
 void posterize(const unsigned char* const input, 
                unsigned char* const output, 
                size_t cols, size_t rows, int n);
+__global__
+void smooth(const unsigned char* const input, 
+               unsigned char* const output, 
+               size_t cols, size_t rows, int n);
 
 char* process(char* image_rgb, size_t cols, size_t rows, int colors);
