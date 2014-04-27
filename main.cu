@@ -19,7 +19,7 @@ char* process(char* image_rgb, size_t cols, size_t rows, int colors)
   unsigned char *d_img_in;
   unsigned char *d_img_out;
   char *h_img_out;
-  size_t image_data_size = sizeof(unsigned)*cols*rows*3;
+  size_t image_data_size = sizeof(unsigned char)*cols*rows*3;
   h_img_out = (char *)malloc(image_data_size);
   gpuErrchk(cudaMalloc(&d_img_in, image_data_size));
   gpuErrchk(cudaMalloc(&d_img_out, image_data_size));
