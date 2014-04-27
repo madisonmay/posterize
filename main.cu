@@ -19,7 +19,7 @@ char* process(char* image_rgb, size_t cols, size_t rows, int colors)
   unsigned char *d_img_in;
   unsigned char *d_img_out;
   char *h_img_out;
-  gpuErrchk(cudaMalloc(&h_img_out, sizeof(unsigned char)*cols*rows));
+  h_img_out = (char *)malloc(sizeof(unsigned char)*cols*rows);
   gpuErrchk(cudaMalloc(&d_img_in, sizeof(unsigned char)*cols*rows));
   gpuErrchk(cudaMalloc(&d_img_out, sizeof(unsigned char)*cols*rows));
   gpuErrchk(cudaMemcpy(d_img_in, image_rgb, sizeof(unsigned char)*cols*rows, cudaMemcpyHostToDevice));
