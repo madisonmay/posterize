@@ -5,9 +5,7 @@ void posterize(const unsigned char* input,
                unsigned char* output, 
                size_t cols, size_t rows, int n)
 {
-  // int i;
-  // int size = cols*rows*3;
-  // int w = 256/n;
+
   // for (i=0; i<size; i++) {
   //   output[i] = (input[i]/w)*w+w/2;
   // }
@@ -16,6 +14,9 @@ void posterize(const unsigned char* input,
   if (x >= cols || y >= rows) {
       return;
   }
-  int idx = x+y*cols;
-  output[idx] = input[idx]; //copy image
+  int idx = y*cols+x;
+  int w = 256/n;
+  output[idx*3+0] = (input[idx*3+0]/w)*w+w/2;
+  output[idx*3+1] = (input[idx*3+1]/w)*w+w/2;
+  output[idx*3+2] = (input[idx*3+2]/w)*w+w/2;
 }
