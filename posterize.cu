@@ -1,4 +1,4 @@
-#include <cuda.h>
+#include "posterize.h"
 
 __global__
 void posterize(const unsigned char* const input, 

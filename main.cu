@@ -2,17 +2,19 @@
 #include <stdio.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <cuda.h>
+#include "posterize.h"
 
 char* process(char* image_rgb, size_t cols, size_t rows, int colors)
 {
   unsigned char *d_img_in;
   unsigned char *d_img_out;
-  unsigned char *h_img_out;
+  char *h_img_out;
+  cudaMalloc(&h_img_out, sizeof(unsigned char)*cols*rows);
   cudaMalloc(&d_img_in, sizeof(unsigned char)*cols*rows);
   cudaMalloc(&d_img_out, sizeof(unsigned char)*cols*rows);
   cudaMemcpy(d_img_in, image_rgb, sizeof(unsigned char)*cols*rows, cudaMemcpyHostToDevice);
-  const dim3 blockSize();
-  const dim3 gridSize();
+  const dim3 blockSize(8,8,1);
+  const dim3 gridSize(4,4,1);
   posterize<<<gridSize, blockSize>>>(d_img_in, d_img_out, cols, rows, colors);
   cudaMemcpy(h_img_out, d_img_out, sizeof(unsigned char)*cols*rows, cudaMemcpyDeviceToHost);
   return h_img_out;
@@ -48,7 +50,7 @@ int main(int argc, char **argv)
   p[0] = CV_IMWRITE_JPEG_QUALITY;
   p[1] = 95;
   p[2] = 0;
-  cvSaveImage(output_file, out_img, p);
+  cvSaveImage(output_file, out_image_, p);
   cvReleaseImage(&img);
   return 0;
 }
