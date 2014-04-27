@@ -26,9 +26,10 @@ int main(int argc, char **argv)
   cvCopy(img, out_img, NULL);
   size_t cols = img->width;
   size_t rows = img->height;
+  int channels = img->nChannels;
   char* image_rgb;
   image_rgb = img->imageData;
-  char* out_image_rgb = process(image_rgb, cols, rows, colors);
+  char* out_image_rgb = process(image_rgb, cols, rows, channels, colors);
   out_img->imageData = out_image_rgb;
   int p[3];
   p[0] = CV_IMWRITE_JPEG_QUALITY;
