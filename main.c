@@ -16,6 +16,10 @@ int main(int argc, char **argv)
   IplImage* img = cvLoadImage(input_file, CV_LOAD_IMAGE_COLOR);
   size_t cols = img->width;
   size_t rows = img->height;
+  char* rgb_image = malloc(3*cols*rows);
+  rgb_image = img->imageData;
+
+  
   cvReleaseImage(&img);
   return 0;
 }
