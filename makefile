@@ -8,4 +8,4 @@ main.o: main.cu
 	nvcc $(OPENCV_CFLAGS) -g -c main.cu -o main.o
 
 posterize.o: posterize.cu
-	nvcc -c posterize.cu -o posterize.o
+	nvcc -g -c posterize.cu -o posterize.o
