@@ -19,15 +19,16 @@ char* process(char* image_rgb, size_t cols, size_t rows, int colors)
   unsigned char *d_img_in;
   unsigned char *d_img_out;
   char *h_img_out;
-  h_img_out = (char *)malloc(sizeof(unsigned char)*cols*rows*3);
-  gpuErrchk(cudaMalloc(&d_img_in, sizeof(unsigned char)*cols*rows*3));
-  gpuErrchk(cudaMalloc(&d_img_out, sizeof(unsigned char)*cols*rows*3));
-  gpuErrchk(cudaMemcpy(d_img_in, image_rgb, sizeof(unsigned char)*cols*rows*3, cudaMemcpyHostToDevice));
+  size_t image_data_size = sizeof(unsigned)*cols*rows*3;
+  h_img_out = (char *)malloc(image_data_size);
+  gpuErrchk(cudaMalloc(&d_img_in, image_data_size));
+  gpuErrchk(cudaMalloc(&d_img_out, image_data_size));
+  gpuErrchk(cudaMemcpy(d_img_in, image_rgb, image_data_size, cudaMemcpyHostToDevice));
   const dim3 blockSize(8,8,1);
   const dim3 gridSize(cols/blockSize.x+1,rows/blockSize.y+1,1);
   posterize<<<gridSize, blockSize>>>(d_img_in, d_img_out, cols, rows, colors);
   gpuErrchk(cudaDeviceSynchronize());
-  gpuErrchk(cudaMemcpy(h_img_out, d_img_out, sizeof(unsigned char)*cols*rows*3, cudaMemcpyDeviceToHost));
+  gpuErrchk(cudaMemcpy(h_img_out, d_img_out, image_data_size, cudaMemcpyDeviceToHost));
   return h_img_out;
 }
 
