@@ -9,3 +9,12 @@ main.o: main.cu
 
 posterize.o: posterize.cu
 	nvcc -g -c posterize.cu -o posterize.o
+
+serial: serialmain.o serialposterize.o
+	gcc $(OPENCV_CFLAGS) -g -o serialmain serialmain.o serialposterize.o $(OPENCV_LIBS)
+
+serialmain.o: serialmain.c
+	gcc -g -c serialmain.c -o serialmain.o
+
+serialposterize: posterize.c
+	gcc -g -c serialposterize.c -o serialmain.o	
