@@ -86,7 +86,7 @@ char* process(char* image_rgb, size_t cols, size_t rows, int channels, int color
 {
   unsigned char *d_img_in;
   unsigned char *d_img_out;
-  // unsigned char *d_smooth_out;
+  unsigned char *d_smooth_out;
   char *h_img_out;
   size_t image_data_size = sizeof(unsigned char)*cols*rows*channels;
   h_img_out = (char *)malloc(image_data_size);
