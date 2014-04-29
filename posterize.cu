@@ -38,7 +38,7 @@ void smooth(const unsigned char* input,
   }
   int id = y*cols+x;
   int w = 256/n;
-  int i, j, windowSize = 30;
+  int i, j, windowSize = 5;
   int idx, idy;
   int size = n*n*n;
   int pixel_id;
@@ -61,7 +61,7 @@ void smooth(const unsigned char* input,
   }
 
   int max = 0;
-  int max_index = -1;
+  int max_index = 0;
   for (i = 0; i<size; i++) {
     if (hist[i] > max) {
       max_index = i;
