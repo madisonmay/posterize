@@ -8,7 +8,7 @@ main.o: main.cu
 	nvcc $(OPENCV_CFLAGS) -g -c main.cu -o main.o
 
 posterize.o: posterize.cu
-	nvcc -g -c posterize.cu -o posterize.o
+	nvcc -arch=sm_20 -g -c posterize.cu -o posterize.o
 
 serial: serialmain.o serialposterize.o
 	gcc $(OPENCV_CFLAGS) -g -o serialmain serialmain.o serialposterize.o $(OPENCV_LIBS)

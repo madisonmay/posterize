@@ -11,6 +11,7 @@ void posterize(const unsigned char* const input,
 __global__
 void smooth(const unsigned char* const input, 
                unsigned char* const output, 
-               size_t cols, size_t rows, int channels, int n);
+               size_t cols, size_t rows, int channels, int n,
+               int *hist);
 
 char* process(char* image_rgb, size_t cols, size_t rows, int channels, int colors);
