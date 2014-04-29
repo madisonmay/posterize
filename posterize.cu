@@ -48,14 +48,18 @@ void smooth(const unsigned char* input,
     hist[i] = 0;   
   }
 
+  int sum_r = 0;
+  int sum_g = 0;
+  int sum_b = 0;
+
   for (i = -windowSize/2; i<=windowSize/2; i++) {
-    idy = min(max((y + i), 0), (int) cols);
+    idy = min(max((y + i), 0), (int) rows);
     for (j = -windowSize/2; j<=windowSize/2; j++) {
-      idx = min(max((x + j), 0), (int) rows);
+      idx = min(max((x + j), 0), (int) cols);
       pixel_id = idy*cols + idx;
-      r = input[pixel_id*channels+0]/w;
-      g = input[pixel_id*channels+1]/w;
-      b = input[pixel_id*channels+2]/w;
+      r = input[pixel_id*channels+0]/w; sum_r += input[pixel_id*channels+0];
+      g = input[pixel_id*channels+1]/w; sum_g += input[pixel_id*channels+1];
+      b = input[pixel_id*channels+2]/w; sum_b += input[pixel_id*channels+2];
       hist[r*n*n + g*n + b]++;
     }
   }
@@ -69,13 +73,13 @@ void smooth(const unsigned char* input,
     }
   }
 
+  // unsigned char mode_r = sum_r / (windowSize*windowSize);
+  // unsigned char mode_g = sum_g / (windowSize*windowSize);
+  // unsigned char mode_b = sum_b / (windowSize*windowSize);
+
   unsigned char mode_r = (unsigned char) (max_index/(n*n))*w+w/2;
   unsigned char mode_g = (unsigned char) ((max_index/n)%n)*w+w/2;
   unsigned char mode_b = (unsigned char) (max_index%(n*n))*w+w/2;
-
-  // unsigned char mode_r = input[id*channels+0];
-  // unsigned char mode_g = input[id*channels+1];
-  // unsigned char mode_b = input[id*channels+2];
 
   output[id*channels+0] = mode_r;
   output[id*channels+1] = mode_g;
