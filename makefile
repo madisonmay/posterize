@@ -13,6 +13,3 @@ posterize.o: posterize.cu
 
 serialposterize.o: serialposterize.c
 	gcc -g -c serialposterize.c -o $@
-
-test: serialposterize.c posterize.cu main.cu
-	nvcc $^ $(OPENCV_CFLAGS) -g -o $@ $(OPENCV_LIBS)
