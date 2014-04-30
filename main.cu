@@ -4,7 +4,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <cuda.h>
 #include "posterize.h"
-#include "serialposterize.h"
+#include "serialposterize.c"
 
 int main(int argc, char **argv)
 {
