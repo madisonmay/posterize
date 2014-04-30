@@ -26,6 +26,66 @@ void posterize(const unsigned char* input,
 }
 
 __global__
+void mode(const unsigned char* input,
+          unsigned char* output,
+          size_t cols, size_t rows, int channels)
+{
+  int x = blockDim.x*blockIdx.x+threadIdx.x;
+  int y = blockDim.y*blockIdx.y+threadIdx.y;
+  if (x >= cols || y >= rows) {
+      return;
+  }
+
+  int idx = y*cols+x;
+
+  int dim = 3;
+
+  int X, Y, offset, Offset = 0;
+
+  int count = 0, maxCount = 0;
+
+  unsigned char mode = NULL;
+
+  // for each channel...
+  for (int i = 0; i < channels; i++) {
+    // for every pixel per channel...
+    for (int j = -dim/2; j < dim/2+1; j++){
+      for (int k = -dim/2; k < dim/2+1; k++) {
+        x = blockDim.x*(blockIdx.x+j)+threadIdx.x+k;
+        y = blockDim.y*(blockIdx.y+j)+threadIdx.y+k;
+
+        offset = y*cols+x;
+
+        // compare it to every other pixel
+        for (int J = -dim/2; J < dim/2+1; J++){
+          for (int K = -dim/2; K < dim/2+1; K++) {
+            X = blockDim.x*(blockIdx.x+J)+threadIdx.x+K;
+            Y = blockDim.y*(blockIdx.y+J)+threadIdx.y+K;
+
+            Offset = Y*cols+X;
+
+            if (input[offset*channels + i] == input[Offset*channels + i]) {
+              count++;
+            }
+          }
+        }
+        if (count > maxCount){
+          maxCount = count;
+          mode = input[offset*channels + i];
+        }
+      }
+    }
+
+    if (maxCount > 1) {
+      output[idx*channels + i] = mode;
+    }
+    else {
+      output[idx*channels + i] = input[idx*channels + i];
+    }
+  }
+}
+
+__global__
 void smooth(const unsigned char* input,
             unsigned char* output,
             size_t cols, size_t rows, int channels, int n,
