@@ -38,7 +38,7 @@ void mode(const unsigned char* input,
 
   int idx = y*cols+x;
 
-  int dim = 10;
+  int dim = 9;
 
   int offset, Offset = 0;
 
@@ -46,25 +46,33 @@ void mode(const unsigned char* input,
 
   unsigned char mode = NULL;
 
+  int i, j, k, J, K = 0;
+
   // for each channel...
-  for (int i = 0; i < channels; i++) {
+  for (i = 0; i < channels; i++) {
     // for every pixel per channel...
-    for (int j = -dim/2; j < dim/2+1; j++){
+    for (j = -dim/2; j <= dim/2; j++){
       count = 0;
-      for (int k = -dim/2; k < dim/2+1; k++) {
+      for (k = -dim/2; k <= dim/2; k++) {
         offset = idx+cols*j+k;
+        if ((x+k >= cols || y+j >= rows) || (x+k < 0 || y+j < 0)) {
+          continue;
+        }
 
         // compare it to every other pixel
-        for (int J = -dim/2; J < dim/2+1; J++){
-          for (int K = -dim/2; K < dim/2+1; K++) {
+        for (J = -dim/2; J <= dim/2; J++){
+          for (K = -dim/2; K <= dim/2; K++) {
             Offset = idx+cols*J+K;
+            if ((x+K >= cols || y+J >= rows) || (x+K < 0 || y+J < 0)) {
+              continue;
+            }
 
             if (input[offset*channels + i] == input[Offset*channels + i]) {
               count++;
             }
           }
         }
-        if (count > maxCount){
+        if (count > maxCount) {
           maxCount = count;
           mode = input[offset*channels + i];
         }
