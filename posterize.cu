@@ -90,7 +90,6 @@ char* process(char* image_rgb, size_t cols, size_t rows, int channels, int color
 {
   unsigned char *d_img_in;
   unsigned char *d_img_out;
-  unsigned char *d_smooth_out;
   char *h_img_out;
   size_t image_data_size = sizeof(unsigned char)*cols*rows*channels;
   h_img_out = (char *)malloc(image_data_size);
@@ -101,12 +100,6 @@ char* process(char* image_rgb, size_t cols, size_t rows, int channels, int color
   const dim3 gridSize(cols/blockSize.x+1,rows/blockSize.y+1,1);
   posterize<<<gridSize, blockSize>>>(d_img_in, d_img_out, cols, rows, channels, colors);
   gpuErrchk(cudaFree(d_img_in));
-  gpuErrchk(cudaMalloc(&d_smooth_out, image_data_size));
-
-  int size = colors*colors*colors;
-  int *hist;
-  gpuErrchk(cudaMalloc(&hist, sizeof(int)*size));
-  smooth<<<gridSize, blockSize>>>(d_img_out, d_smooth_out, cols, rows, channels, colors, hist);
-  gpuErrchk(cudaMemcpy(h_img_out, d_smooth_out, image_data_size, cudaMemcpyDeviceToHost));
+  gpuErrchk(cudaMemcpy(h_img_out, d_img_out, image_data_size, cudaMemcpyDeviceToHost));
   return h_img_out;
 }
