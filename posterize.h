@@ -14,4 +14,4 @@ void smooth(const unsigned char* const input,
                size_t cols, size_t rows, int channels, int n,
                int *hist);
 
-char* process(char* image_rgb, size_t cols, size_t rows, int channels, int colors);
+char* processPosterize(char* image_rgb, size_t cols, size_t rows, int channels, int colors);

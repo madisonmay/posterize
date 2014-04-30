@@ -82,7 +82,7 @@ void smooth(const unsigned char* input,
   output[id*channels+2] = mode_b;
 }
 
-char* process(char* image_rgb, size_t cols, size_t rows, int channels, int colors)
+char* processPosterize(char* image_rgb, size_t cols, size_t rows, int channels, int colors)
 {
   unsigned char *d_img_in;
   unsigned char *d_img_out;

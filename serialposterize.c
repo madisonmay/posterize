@@ -1,6 +1,6 @@
 #include "serialposterize.h"
 
-char* process(char* image_rgb, size_t cols, size_t rows, int channels, int colors)
+char* processSerialPosterize(char* image_rgb, size_t cols, size_t rows, int channels, int colors)
 {
   char *image_out;
   size_t image_data_size = sizeof(unsigned char)*cols*rows*channels;
