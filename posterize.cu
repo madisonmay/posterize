@@ -38,9 +38,9 @@ void mode(const unsigned char* input,
 
   int idx = y*cols+x;
 
-  int dim = 3;
+  int dim = 10;
 
-  int X, Y, offset, Offset = 0;
+  int offset, Offset = 0;
 
   int count = 0, maxCount = 0;
 
@@ -50,19 +50,14 @@ void mode(const unsigned char* input,
   for (int i = 0; i < channels; i++) {
     // for every pixel per channel...
     for (int j = -dim/2; j < dim/2+1; j++){
+      count = 0;
       for (int k = -dim/2; k < dim/2+1; k++) {
-        x = blockDim.x*(blockIdx.x+j)+threadIdx.x+k;
-        y = blockDim.y*(blockIdx.y+j)+threadIdx.y+k;
-
-        offset = y*cols+x;
+        offset = idx+cols*j+k;
 
         // compare it to every other pixel
         for (int J = -dim/2; J < dim/2+1; J++){
           for (int K = -dim/2; K < dim/2+1; K++) {
-            X = blockDim.x*(blockIdx.x+J)+threadIdx.x+K;
-            Y = blockDim.y*(blockIdx.y+J)+threadIdx.y+K;
-
-            Offset = Y*cols+X;
+            Offset = idx+cols*J+K;
 
             if (input[offset*channels + i] == input[Offset*channels + i]) {
               count++;
@@ -82,6 +77,7 @@ void mode(const unsigned char* input,
     else {
       output[idx*channels + i] = input[idx*channels + i];
     }
+    maxCount = 0;
   }
 }
 
@@ -154,7 +150,8 @@ char* process(char* image_rgb, size_t cols, size_t rows, int channels, int color
   gpuErrchk(cudaMemcpy(d_img_in, image_rgb, image_data_size, cudaMemcpyHostToDevice));
   const dim3 blockSize(16,16,1);
   const dim3 gridSize(cols/blockSize.x+1,rows/blockSize.y+1,1);
-  posterize<<<gridSize, blockSize>>>(d_img_in, d_img_out, cols, rows, channels, colors);
+  // posterize<<<gridSize, blockSize>>>(d_img_in, d_img_out, cols, rows, channels, colors);
+  mode<<<gridSize, blockSize>>>(d_img_in, d_img_out, cols, rows, channels);
   gpuErrchk(cudaFree(d_img_in));
   gpuErrchk(cudaMemcpy(h_img_out, d_img_out, image_data_size, cudaMemcpyDeviceToHost));
   return h_img_out;
