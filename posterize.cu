@@ -33,5 +33,6 @@ char* processPosterize(char* image_rgb, size_t cols, size_t rows, int channels, 
   posterize<<<gridSize, blockSize>>>(d_img_in, d_img_out, cols, rows, channels, colors);
   gpuErrchk(cudaFree(d_img_in));
   gpuErrchk(cudaMemcpy(h_img_out, d_img_out, image_data_size, cudaMemcpyDeviceToHost));
+  gpuErrchk(cudaFree(d_img_out));
   return h_img_out;
 }
