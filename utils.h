@@ -1,3 +1,5 @@
+#ifndef UTILS_H
+#define UTILS_H
 #include <stdio.h>
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 
@@ -11,3 +13,4 @@ inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
       if (abort) exit(code);
    }
 }
+#endif

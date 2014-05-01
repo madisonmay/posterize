@@ -1,3 +1,5 @@
+#ifndef POSTERIZE_H
+#define POSTERIZE_H
 #include <stdio.h>
 
 __global__
@@ -11,3 +13,4 @@ void smooth(const unsigned char* const input,
                int *hist);
 
 char* processPosterize(char* image_rgb, size_t cols, size_t rows, int channels, int colors);
+#endif
