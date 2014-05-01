@@ -4,6 +4,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <cuda.h>
 #include "posterize.h"
+#include "mode.h"
+#include "smooth.h"
 #include "serialposterize.c"
 
 int main(int argc, char **argv)
@@ -38,7 +40,11 @@ int main(int argc, char **argv)
     out_image_rgb = processSerialPosterize(image_rgb, cols, rows, channels, colors);
   } else if (strcmp(command, "posterize") == 0) {
     out_image_rgb = processPosterize(image_rgb, cols, rows, channels, colors);
-  } else {
+  } else if (strcmp(command, "mode") == 0) {
+    out_image_rgb = processMode(image_rgb, cols, rows, channels, colors);
+  } else if (strcmp(command, "smooth") == 0) {
+    out_image_rgb = processSmooth(image_rgb, cols, rows, channels, colors);
+  }else {
     printf("Command '%s' is not valid\n", command);
     exit(1);
   }
