@@ -7,6 +7,7 @@
 #include "mode.h"
 #include "smooth.h"
 #include "serialposterize.c"
+#include "serialmode.c"
 
 int main(int argc, char **argv)
 {
@@ -44,6 +45,8 @@ int main(int argc, char **argv)
     out_image_rgb = processMode(image_rgb, cols, rows, channels, colors);
   } else if (strcmp(command, "smooth") == 0) {
     out_image_rgb = processSmooth(image_rgb, cols, rows, channels, colors);
+  } else if (strcmp(command, "serial-mode") == 0) {
+    out_image_rgb = processSerialMode(image_rgb, cols, rows, channels, colors);
   } else {
     printf("Command '%s' is not valid\n", command);
     exit(1);

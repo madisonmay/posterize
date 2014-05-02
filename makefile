@@ -19,3 +19,6 @@ mode.o: mode.cu
 
 smooth.o: smooth.cu
 	nvcc -g -c $^ -o $@
+
+serialmode.o: serialmode.c
+	gcc -g -c $^ -o $@
