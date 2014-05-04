@@ -47,7 +47,7 @@ void mode_kernel(const unsigned char* input,
       hist[base+iter] = 0;
     }
 
-    maxColor = input[offset*channels+i]/w;
+    maxColor = input[idx*channels+i]/w;
 
     for (j = -dim/2; j <= dim/2; j++){
       for (k = -dim/2; k <= dim/2; k++) {
