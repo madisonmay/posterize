@@ -53,7 +53,6 @@ int main(int argc, char **argv)
 }
 
 void process_image(IplImage* img, int colors, char* command, IplImage* out_img) {
-  cvCopy(img, out_img, NULL);
   size_t cols = img->width;
   size_t rows = img->height;
   int channels = img->nChannels;
@@ -91,12 +90,13 @@ int setupCam() {
 
   if (capture) {
     printf("In capture ...\n");
+    IplImage* out_img;
     for (;;) {
       IplImage* iplImg = cvQueryFrame(capture);
 
-      IplImage* out_img = cvCreateImage(cvGetSize(iplImg), iplImg->depth, iplImg->nChannels);
+      out_img = cvCreateImage(cvGetSize(iplImg), iplImg->depth, iplImg->nChannels);
 
-      process_image(iplImg, 6, "posterize", out_img);
+      process_image(iplImg, 6, "serial-mode", out_img);
       frame = iplImg;
       if (frame.empty()) break;
 
@@ -106,6 +106,7 @@ int setupCam() {
         flip(frame, frameCopy, 0);
 
       cvShowImage("result", out_img);
+      cvReleaseImage(&out_img);
 
       if (waitKey(10) >= 0)
         cvReleaseCapture(&capture);

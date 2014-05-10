@@ -22,7 +22,7 @@ __global__
 void mode_kernel(const unsigned char* input,
                  unsigned char* output,
                  size_t cols, size_t rows, int channels,
-                 int colors, unsigned int* hist)
+                 int colors, unsigned int* hist, int dim)
 {
   int x = blockDim.x*blockIdx.x+threadIdx.x;
   int y = blockDim.y*blockIdx.y+threadIdx.y;
@@ -31,8 +31,6 @@ void mode_kernel(const unsigned char* input,
   }
 
   int idx = y*cols+x;
-
-  int dim = 11;
   int offset;
 
   int i, j, k ;
@@ -94,7 +92,7 @@ char* processPosterize(char* image_rgb, size_t cols, size_t rows, int channels, 
   gpuErrchk(cudaFree(d_img_in));
   gpuErrchk(cudaMalloc(&d_img_mode, image_data_size));
   gpuErrchk(cudaMalloc(&d_hist, hist_size));
-  mode_kernel<<<gridSize, blockSize>>>(d_img_reduce, d_img_mode, cols, rows, channels, colors, d_hist);
+  mode_kernel<<<gridSize, blockSize>>>(d_img_reduce, d_img_mode, cols, rows, channels, colors, d_hist, 5);
   gpuErrchk(cudaFree(d_img_reduce));
   gpuErrchk(cudaMemcpy(h_img_out, d_img_mode, image_data_size, cudaMemcpyDeviceToHost));
   gpuErrchk(cudaFree(d_img_mode));
