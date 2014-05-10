@@ -14,6 +14,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 int setupCam();
+void process_image(IplImage* img, int colors, char* command, IplImage* out_img);
 
 int main(int argc, char **argv)
 {
@@ -34,8 +35,22 @@ int main(int argc, char **argv)
   command = argv[1];
   input_file = argv[2];
   output_file = argv[3];
+
   IplImage* img = cvLoadImage(input_file, CV_LOAD_IMAGE_COLOR);
   IplImage* out_img = cvCreateImage(cvGetSize(img), img->depth, img->nChannels);
+
+  process_image(img, colors, command, out_img);
+  
+  int p[3];
+  p[0] = CV_IMWRITE_JPEG_QUALITY;
+  p[1] = 95;
+  p[2] = 0;
+  cvSaveImage(output_file, out_img, p);
+  cvReleaseImage(&img);
+  return 0;
+}
+
+void process_image(IplImage* img, int colors, char* command, IplImage* out_img) {
   cvCopy(img, out_img, NULL);
   size_t cols = img->width;
   size_t rows = img->height;
@@ -43,6 +58,7 @@ int main(int argc, char **argv)
   char* image_rgb;
   image_rgb = img->imageData;
   char* out_image_rgb;
+
   if (strcmp(command,"serial-posterize") == 0) {
     out_image_rgb = processSerialPosterize(image_rgb, cols, rows, channels, colors);
   } else if (strcmp(command, "posterize") == 0) {
@@ -58,13 +74,6 @@ int main(int argc, char **argv)
     exit(1);
   }
   out_img->imageData = out_image_rgb;
-  int p[3];
-  p[0] = CV_IMWRITE_JPEG_QUALITY;
-  p[1] = 95;
-  p[2] = 0;
-  cvSaveImage(output_file, out_img, p);
-  cvReleaseImage(&img);
-  return 0;
 }
 
 using namespace cv;
