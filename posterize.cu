@@ -21,8 +21,7 @@ void reduce_kernel(const unsigned char* input,
 __global__
 void mode_kernel(const unsigned char* input,
                  unsigned char* output,
-                 size_t cols, size_t rows, int channels,
-                 int colors, unsigned int* hist, int dim)
+                 size_t cols, size_t rows, int channels, int dim)
 {
   int x = blockDim.x*blockIdx.x+threadIdx.x;
   int y = blockDim.y*blockIdx.y+threadIdx.y;
@@ -31,44 +30,52 @@ void mode_kernel(const unsigned char* input,
   }
 
   int idx = y*cols+x;
-  int offset;
 
-  int i, j, k ;
-  int w = 256/colors;
-  int iter, base, maxColor, maxCount = 0; 
+  int offset, Offset = 0;
+
+  int count = 0, maxCount = 0;
+
+  unsigned char mode = NULL;
+
+  int i, j, k, J, K = 0;
 
   // for each channel...
   for (i = 0; i < channels; i++) {
     // for every pixel per channel...
-    base = idx*colors*channels+colors*i;
-    for (iter = 0; iter < colors; iter++) {
-      hist[base+iter] = 0;
-    }
-
-    maxColor = input[idx*channels+i]/w;
-
     for (j = -dim/2; j <= dim/2; j++){
+      count = 0;
       for (k = -dim/2; k <= dim/2; k++) {
-
         offset = idx+cols*j+k;
         if ((x+k >= cols || y+j >= rows) || (x+k < 0 || y+j < 0)) {
           continue;
         }
 
-        unsigned char color = input[offset*channels+i]/w;
-        hist[base+color]++;
+        // compare it to every other pixel
+        for (J = -dim/2; J <= dim/2; J++){
+          for (K = -dim/2; K <= dim/2; K++) {
+            Offset = idx+cols*J+K;
+            if ((x+K >= cols || y+J >= rows) || (x+K < 0 || y+J < 0)) {
+              continue;
+            }
+
+            if (input[offset*channels + i] == input[Offset*channels + i]) {
+              count++;
+            }
+          }
+        }
+        if (count > maxCount) {
+          maxCount = count;
+          mode = input[offset*channels + i];
+        }
       }
     }
 
-    for (iter = 0; iter < colors; iter++) {
-      if (hist[base+iter] > maxCount) {
-        maxColor = iter;
-        maxCount = hist[base+iter];
-      }
+    if (maxCount > 1) {
+      output[idx*channels + i] = mode;
     }
-
-    output[idx*channels + i] = maxColor*w+w/2;
-
+    else {
+      output[idx*channels + i] = input[idx*channels + i];
+    }
     maxCount = 0;
   }
 }
@@ -78,10 +85,8 @@ char* processPosterize(char* image_rgb, size_t cols, size_t rows, int channels, 
   unsigned char *d_img_in;
   unsigned char *d_img_reduce;
   unsigned char *d_img_mode;
-  unsigned int  *d_hist;
   char *h_img_out;
   size_t image_data_size = sizeof(unsigned char)*cols*rows*channels;
-  size_t hist_size = sizeof(unsigned int)*cols*rows*channels*colors;
   h_img_out = (char *)malloc(image_data_size);
   gpuErrchk(cudaMalloc(&d_img_in, image_data_size));
   gpuErrchk(cudaMalloc(&d_img_reduce, image_data_size));
@@ -91,8 +96,7 @@ char* processPosterize(char* image_rgb, size_t cols, size_t rows, int channels, 
   reduce_kernel<<<gridSize, blockSize>>>(d_img_in, d_img_reduce, cols, rows, channels, colors);
   gpuErrchk(cudaFree(d_img_in));
   gpuErrchk(cudaMalloc(&d_img_mode, image_data_size));
-  gpuErrchk(cudaMalloc(&d_hist, hist_size));
-  mode_kernel<<<gridSize, blockSize>>>(d_img_reduce, d_img_mode, cols, rows, channels, colors, d_hist, 5);
+  mode_kernel<<<gridSize, blockSize>>>(d_img_reduce, d_img_mode, cols, rows, channels, 5);
   gpuErrchk(cudaFree(d_img_reduce));
   gpuErrchk(cudaMemcpy(h_img_out, d_img_mode, image_data_size, cudaMemcpyDeviceToHost));
   gpuErrchk(cudaFree(d_img_mode));

@@ -96,7 +96,7 @@ int setupCam() {
 
       out_img = cvCreateImage(cvGetSize(iplImg), iplImg->depth, iplImg->nChannels);
 
-      process_image(iplImg, 6, "serial-mode", out_img);
+      process_image(iplImg, 6, "posterize", out_img);
       frame = iplImg;
       if (frame.empty()) break;
 
