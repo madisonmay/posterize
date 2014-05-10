@@ -18,6 +18,8 @@ void process_image(IplImage* img, int colors, char* command, IplImage* out_img);
 
 int main(int argc, char **argv)
 {
+  setupCam();
+  return 0;
   //uchar4 *h_image, *d_image;
   char* input_file;
   char* output_file;
@@ -91,15 +93,19 @@ int setupCam() {
     printf("In capture ...\n");
     for (;;) {
       IplImage* iplImg = cvQueryFrame(capture);
+
+      IplImage* out_img = cvCreateImage(cvGetSize(iplImg), iplImg->depth, iplImg->nChannels);
+
+      process_image(iplImg, 6, "posterize", out_img);
       frame = iplImg;
       if (frame.empty()) break;
 
       if (iplImg->origin == IPL_ORIGIN_TL)
-        frame.copyTo( frameCopy );
+        frame.copyTo(frameCopy);
+      else
+        flip(frame, frameCopy, 0);
 
-      else flip(frame, frameCopy, 0);
-
-      cvShowImage("result", iplImg);
+      cvShowImage("result", out_img);
 
       if (waitKey(10) >= 0)
         cvReleaseCapture(&capture);
