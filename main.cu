@@ -9,6 +9,12 @@
 #include "serialposterize.c"
 #include "serialmode.c"
 
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+int setupCam();
+
 int main(int argc, char **argv)
 {
   //uchar4 *h_image, *d_image;
@@ -59,4 +65,41 @@ int main(int argc, char **argv)
   cvSaveImage(output_file, out_img, p);
   cvReleaseImage(&img);
   return 0;
+}
+
+using namespace cv;
+
+int setupCam() {
+  CvCapture* capture = 0;
+  Mat frame, frameCopy, image;
+
+  capture = cvCaptureFromCAM( -1 );
+  if(!capture) printf("No camera detected\n");
+
+  cvNamedWindow( "result", CV_WINDOW_AUTOSIZE );
+
+  if (capture) {
+    printf("In capture ...\n");
+    for (;;) {
+      IplImage* iplImg = cvQueryFrame(capture);
+      frame = iplImg;
+      if (frame.empty()) break;
+
+      if (iplImg->origin == IPL_ORIGIN_TL)
+        frame.copyTo( frameCopy );
+
+      else flip(frame, frameCopy, 0);
+
+      cvShowImage("result", iplImg);
+
+      if (waitKey(10) >= 0)
+        cvReleaseCapture(&capture);
+    }
+
+    waitKey(0);
+
+    cvDestroyWindow("result");
+
+    return 0;
+  }
 }
