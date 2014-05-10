@@ -96,7 +96,7 @@ char* processPosterize(char* image_rgb, size_t cols, size_t rows, int channels, 
   reduce_kernel<<<gridSize, blockSize>>>(d_img_in, d_img_reduce, cols, rows, channels, colors);
   gpuErrchk(cudaFree(d_img_in));
   gpuErrchk(cudaMalloc(&d_img_mode, image_data_size));
-  mode_kernel<<<gridSize, blockSize>>>(d_img_reduce, d_img_mode, cols, rows, channels, 5);
+  mode_kernel<<<gridSize, blockSize>>>(d_img_reduce, d_img_mode, cols, rows, channels, 3);
   gpuErrchk(cudaFree(d_img_reduce));
   gpuErrchk(cudaMemcpy(h_img_out, d_img_mode, image_data_size, cudaMemcpyDeviceToHost));
   gpuErrchk(cudaFree(d_img_mode));
